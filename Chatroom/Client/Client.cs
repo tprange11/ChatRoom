@@ -12,7 +12,7 @@ namespace Client
     {
         TcpClient clientSocket;
         NetworkStream stream;
-        string UserName;
+        string Username;
         public Client(string IP, int port)
         {
             clientSocket = new TcpClient();
@@ -30,6 +30,13 @@ namespace Client
             byte[] recievedMessage = new byte[256];
             stream.Read(recievedMessage, 0, recievedMessage.Length);
             UI.DisplayMessage(Encoding.ASCII.GetString(recievedMessage));
+        }
+
+        public void GetUsername()
+        {
+            UI.DisplayMessage("Please enter your username");
+            Username = UI.GetInput();
+            UI.DisplayMessage("Welcome to the chat, " + Username + "!");
         }
     }
 }
