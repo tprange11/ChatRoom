@@ -16,5 +16,9 @@ namespace Client
         {
             return Console.ReadLine();
         }
+        public static void SetTitleBar(string text)
+        {
+            Console.Title = text;
+        }
     }
 }
