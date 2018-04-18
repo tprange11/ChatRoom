@@ -27,7 +27,7 @@ namespace Server
         {
             byte[] recievedMessage = new byte[256];
             stream.Read(recievedMessage, 0, recievedMessage.Length);
-            string recievedMessageString = Encoding.ASCII.GetString(recievedMessage);
+            string recievedMessageString = Encoding.ASCII.GetString(recievedMessage).Replace("\0",string.Empty);
             Console.WriteLine(recievedMessageString);
             return recievedMessageString;
         }

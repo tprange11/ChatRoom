@@ -16,7 +16,7 @@ namespace Server
         TcpListener server;
         private bool ConnectionOpen = true;
 
-        Dictionary<TKey, TValue> ChatUsers = new Dictionary<TKey, TValue>();
+        //Dictionary<TKey, TValue> ChatUsers = new Dictionary<TKey, TValue>();
 
         public Server()
         {
@@ -25,11 +25,18 @@ namespace Server
         }
         public void Run()
         {
-            AcceptClient();
-            while (ConnectionOpen)
+            Task[] tasks = new Task[10];
+            for (int i = 0; i < 10; i++)
             {
-            string message = client.Recieve();
-            Respond(message);
+                tasks[i] = Task.Factory.StartNew(() =>
+                {
+                    AcceptClient();
+                    while (ConnectionOpen)
+                    {
+                        string message = client.Recieve();
+                        Respond(message);
+                    }
+                });
             }
            
         }
