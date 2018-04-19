@@ -33,6 +33,7 @@ namespace Server
                     AcceptClient();
                     while (ConnectionOpen)
                     {
+                        client.RecieveUsername();
                         string message = client.Recieve();
                         Respond(message);
                     }

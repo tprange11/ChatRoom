@@ -32,6 +32,14 @@ namespace Server
             Console.WriteLine(recievedMessageString);
             return recievedMessageString;
         }
+        public string RecieveUsername()
+        {
+            byte[] RecievedUsername = new byte[256];
+            stream.Read(RecievedUsername, 0, RecievedUsername.Length);
+            username = Encoding.ASCII.GetString(RecievedUsername).Replace("\0", string.Empty);
+            Console.WriteLine(username);
+            return username;
+        }
 
     }
 }

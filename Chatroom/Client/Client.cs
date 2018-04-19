@@ -46,5 +46,10 @@ namespace Client
         {
             UI.DisplayMessage("Welcome to the chat, " + username + "!");
         }
+        public void SendUsername()
+        {
+            byte[] name = Encoding.ASCII.GetBytes(username);
+            stream.Write(name, 0, name.Count());
+        }
     }
 }
