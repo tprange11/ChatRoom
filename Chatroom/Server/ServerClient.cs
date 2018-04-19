@@ -19,7 +19,7 @@ namespace Server
             client = Client;
             UserId = "495933b6-1762-47a1-b655-483510072e73";
         }
-        public void Send(string Message)
+        public void Send(TcpClient Client,string Message)
         {
             byte[] message = Encoding.ASCII.GetBytes(Message);
             stream.Write(message, 0, message.Count());

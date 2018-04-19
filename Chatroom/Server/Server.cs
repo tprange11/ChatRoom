@@ -15,17 +15,19 @@ namespace Server
         public static ServerClient client;
         TcpListener server;
         private bool ConnectionOpen = true;
+        private List<TcpClient> socketList = new List<TcpClient>();
 
 
         public Server()
         {
-            server = new TcpListener(IPAddress.Parse("127.0.0.1"), 9999);
+            server = new TcpListener(IPAddress.Parse("192.168.0.137"), 9999);
             Users clientList = new Users();
             server.Start();
         }
         public void Run()
         {
-            Task[] tasks = new Task[10];
+            int seats = 10;
+            Task[] tasks = new Task[seats];
             for (int i = 0; i < 10; i++)
             {
                 tasks[i] = Task.Factory.StartNew(() =>
@@ -45,13 +47,17 @@ namespace Server
         {
             TcpClient clientSocket = default(TcpClient);
             clientSocket = server.AcceptTcpClient();
+            socketList.Add(clientSocket);
             Console.WriteLine("Connected");
             NetworkStream stream = clientSocket.GetStream();
             client = new ServerClient(stream, clientSocket);
         }
         private void Respond(string body)
         {
-             client.Send(body);
+            for (int i = 0; i > socketList.Count; i++)
+            {
+                client.Send(socketList[i],body);
+            }
         }
     }
 }
