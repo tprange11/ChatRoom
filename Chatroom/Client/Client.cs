@@ -36,11 +36,15 @@ namespace Client
         {
             UI.DisplayMessage("Please enter your username");
             username = UI.GetInput();
-            UI.DisplayMessage("Welcome to the chat, " + username + "!");
+            
         }
         public string GetUsername()
         {
             return username;
+        }
+        public void DisplayIntroMessage()
+        {
+            UI.DisplayMessage("Welcome to the chat, " + username + "!");
         }
     }
 }

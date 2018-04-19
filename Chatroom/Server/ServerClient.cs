@@ -12,6 +12,7 @@ namespace Server
         NetworkStream stream;
         TcpClient client;
         public string UserId;
+        public string username;
         public ServerClient(NetworkStream Stream, TcpClient Client)
         {
             stream = Stream;
