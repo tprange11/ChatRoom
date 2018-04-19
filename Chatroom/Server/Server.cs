@@ -16,13 +16,7 @@ namespace Server
         TcpListener server;
         private bool ConnectionOpen = true;
 
-<<<<<<< HEAD
-        Dictionary<ServerClient, ServerClient> ChatUsers = new Dictionary<ServerClient, ServerClient>();
-        Queue<string> MessageQueue = new Queue<string>();
-=======
-        
 
->>>>>>> b48922940bdd7fe5a2213383e6926bc176077956
         public Server()
         {
             server = new TcpListener(IPAddress.Parse("127.0.0.1"), 9999);
