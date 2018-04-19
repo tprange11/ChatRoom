@@ -10,8 +10,11 @@ namespace Server
     {
         static void Main(string[] args)
         {
+            Logger.Filelogger logger = new Logger.Filelogger();
+            logger.Log("ChatRoom Server Started");
             new Server().Run();
             Console.ReadLine();
+            logger.Log("ChatRoom Server Stopped");
         }
     }
 }
