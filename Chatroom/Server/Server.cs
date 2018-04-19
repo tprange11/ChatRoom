@@ -16,11 +16,12 @@ namespace Server
         TcpListener server;
         private bool ConnectionOpen = true;
 
-        //Dictionary<TKey, TValue> ChatUsers = new Dictionary<TKey, TValue>();
+        
 
         public Server()
         {
             server = new TcpListener(IPAddress.Parse("127.0.0.1"), 9999);
+            Users clientList = new Users();
             server.Start();
         }
         public void Run()
