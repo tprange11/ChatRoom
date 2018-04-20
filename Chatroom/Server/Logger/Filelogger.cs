@@ -15,9 +15,16 @@ namespace Server.Logger
         {
             if (!File.Exists(path))
             {
-                using (StreamWriter sw = File.CreateText(path))
+                try
                 {
-                    sw.WriteLine(cdate + data);                    
+                    using (StreamWriter sw = File.CreateText(path))
+                    {
+                        sw.WriteLine(cdate + data);
+                    }
+                }
+                catch (System.IO.DirectoryNotFoundException)
+                {
+                    System.IO.Directory.CreateDirectory(@"C:\temp");
                 }
             }
             else
