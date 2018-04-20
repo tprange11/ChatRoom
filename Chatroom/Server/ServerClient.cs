@@ -7,38 +7,65 @@ using System.Threading.Tasks;
 
 namespace Server
 {
-    class ServerClient
+    class ServerClient : IUserClient
     {
         NetworkStream stream;
         TcpClient client;
-        public string UserId;
+        Logger.ILogger logger;
+        public int UserId;
         public string username;
         public ServerClient(NetworkStream Stream, TcpClient Client)
         {
             stream = Stream;
             client = Client;
-            UserId = "495933b6-1762-47a1-b655-483510072e73";
+            logger = new Logger.Filelogger();
+            UserId = stream.GetHashCode();
         }
-        public void Send(TcpClient Client,string Message)
+        public void Send(Message message)
         {
-            byte[] message = Encoding.ASCII.GetBytes(Message);
-            stream.Write(message, 0, message.Count());
+            Object sendLock = new Object();
+            lock (sendLock)
+            {
+                try
+                {
+                    byte[] messageBody = Encoding.ASCII.GetBytes(message.Body);
+                    stream.Write(messageBody, 0, messageBody.Count());
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("An error occurred: '{0}'", e);
+                }
+            }
         }
-        public string Recieve()
+        public Message Recieve()
         {
-            byte[] recievedMessage = new byte[256];
-            stream.Read(recievedMessage, 0, recievedMessage.Length);
-            string recievedMessageString = Encoding.ASCII.GetString(recievedMessage).Replace("\0",string.Empty);
-            Console.WriteLine(recievedMessageString);
-            return recievedMessageString;
+            Object recieveLock = new Object();
+            lock (recieveLock)
+            {
+                byte[] recievedMessage = new byte[256];
+                stream.Read(recievedMessage, 0, recievedMessage.Length);
+                string recievedMessageString = username + ": " + Encoding.ASCII.GetString(recievedMessage).Replace("\0", string.Empty);
+                Message message = new Message(this, recievedMessageString);
+                //logger.Log(recievedMessageString);
+                return message;
+            }
         }
         public string RecieveUsername()
         {
             byte[] RecievedUsername = new byte[256];
             stream.Read(RecievedUsername, 0, RecievedUsername.Length);
             username = Encoding.ASCII.GetString(RecievedUsername).Replace("\0", string.Empty);
-            Console.WriteLine(username);
+            Console.WriteLine(username + " entered the room");
+            logger.Log(username + " entered the room");
             return username;
+        }
+        public void CloseStream()
+        {
+
+        }
+        public bool CheckIfConnected()
+        {
+            return true;
         }
 
     }

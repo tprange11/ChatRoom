@@ -19,17 +19,23 @@ namespace Client
             clientSocket.Connect(IPAddress.Parse(IP), port);
             stream = clientSocket.GetStream();
         }
-        public void Send()
+        Task Send()
         {
-            string messageString = UI.GetInput();
-            byte[] message = Encoding.ASCII.GetBytes(messageString);
-            stream.Write(message, 0, message.Count());
-        }
-        public void Recieve()
+            return Task.Run(() =>
+            {
+                string messageString = UI.GetInput();
+                byte[] message = Encoding.ASCII.GetBytes(messageString);
+                stream.Write(message, 0, message.Count());
+            });
+            }
+        Task Recieve()
         {
-            byte[] recievedMessage = new byte[256];
-            stream.Read(recievedMessage, 0, recievedMessage.Length);
-            UI.DisplayMessage(Encoding.ASCII.GetString(recievedMessage).Replace("\0", string.Empty));
+            return Task.Run(() =>
+            {
+                byte[] recievedMessage = new byte[256];
+                stream.Read(recievedMessage, 0, recievedMessage.Length);
+                UI.DisplayMessage(Encoding.ASCII.GetString(recievedMessage).Replace("\0", string.Empty));
+            });
         }
 
         public void SetUsername()
@@ -50,6 +56,24 @@ namespace Client
         {
             byte[] name = Encoding.ASCII.GetBytes(username);
             stream.Write(name, 0, name.Count());
+        }
+        public void Run()
+        {
+            while (true)
+            {
+                Parallel.Invoke(
+
+                    async () =>
+                    {
+                        await Send();
+                    },
+
+                    async () =>
+                    {
+                        await Recieve();
+                    }
+                );
+            }
         }
     }
 }
