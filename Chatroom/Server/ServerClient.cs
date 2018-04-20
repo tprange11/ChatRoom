@@ -19,7 +19,7 @@ namespace Server
             stream = Stream;
             client = Client;
             logger = new Logger.Filelogger();
-            UserId = stream.GetHashCode();
+            UserId = stream.GetHashCode();            
         }
         public void Send(Message message)
         {
@@ -31,11 +31,12 @@ namespace Server
                     byte[] messageBody = Encoding.ASCII.GetBytes(message.Body);
                     stream.Write(messageBody, 0, messageBody.Count());
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    stream.Close();
-                    client.Close();
-                    Console.WriteLine("1An error occurred: '{0}'", e);
+                    if (stream.CanRead)
+                    {
+                        CloseStream();
+                    }                     
                 }
             }
         }
@@ -49,16 +50,15 @@ namespace Server
                 {
                     stream.Read(recievedMessage, 0, recievedMessage.Length);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    stream.Close();
-                    client.Close();
-                    Console.WriteLine("2An error occurred: '{0}'", e);
+                    if (stream.CanRead)
+                    {
+                        CloseStream();
+                    }
                 }
-                
                 string recievedMessageString = username + ": " + Encoding.ASCII.GetString(recievedMessage).Replace("\0", string.Empty);
                 Message message = new Message(this, recievedMessageString);
-                //logger.Log(recievedMessageString);
                 return message;
             }
         }
@@ -73,12 +73,17 @@ namespace Server
         }
         public void CloseStream()
         {
-
+            stream.Dispose();
+            client.Close();
         }
         public bool CheckIfConnected()
         {
             return client.Connected;
         }
-
+        public void Exit()
+        {
+            Console.WriteLine(username + " left the room");
+//            logger.Log(username + " left the room");
+        }
     }
 }

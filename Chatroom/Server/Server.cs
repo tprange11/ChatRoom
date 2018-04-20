@@ -91,6 +91,7 @@ namespace Server
                         {
                             int userKey = users.ElementAt(i).Key;
                             users.Remove(userKey);
+                            client.Exit();
                         }
                     }
                 }
@@ -127,11 +128,6 @@ namespace Server
                         Message message = user.Recieve();
                         logger.Log(message.Body);
                         messages.Enqueue(message);
-                    }
-                    else
-                    {
-                        
-                        users.Remove(client.UserId);
                     }
                 }
             });

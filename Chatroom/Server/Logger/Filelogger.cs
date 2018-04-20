@@ -13,25 +13,29 @@ namespace Server.Logger
         public string path = @"C:\temp\ChatRoom.log";
         public void Log(string data)
         {
-            if (!File.Exists(path))
+            Object fileLock = new Object();
+            lock (fileLock)
             {
-                try
+                if (!File.Exists(path))
                 {
-                    using (StreamWriter sw = File.CreateText(path))
+                    try
+                    {
+                        using (StreamWriter sw = File.CreateText(path))
+                        {
+                            sw.WriteLine(cdate + data);
+                        }
+                    }
+                    catch (System.IO.DirectoryNotFoundException)
+                    {
+                        System.IO.Directory.CreateDirectory(@"C:\temp");
+                    }
+                }
+                else
+                {
+                    using (StreamWriter sw = File.AppendText(path))
                     {
                         sw.WriteLine(cdate + data);
                     }
-                }
-                catch (System.IO.DirectoryNotFoundException)
-                {
-                    System.IO.Directory.CreateDirectory(@"C:\temp");
-                }
-            }
-            else
-            {
-                using (StreamWriter sw = File.AppendText(path))
-                {
-                    sw.WriteLine(cdate + data);
                 }
             }
 
