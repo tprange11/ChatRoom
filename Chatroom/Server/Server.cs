@@ -16,7 +16,6 @@ namespace Server
         Dictionary<int, IUserClient> users;
         Queue<Message> messages;
         Logger.ILogger logger;
-        private bool ConnectionOpen = true;
         public static ServerClient client;
 
         private List<TcpClient> socketList = new List<TcpClient>();
@@ -29,7 +28,6 @@ namespace Server
             messages = new Queue<Message>();
             logger = new Logger.Filelogger();
             server = new TcpListener(IPAddress.Parse("127.0.0.1"), 9999);
-            Users clientList = new Users();
             server.Start();
         }
         public void Run()
@@ -124,9 +122,17 @@ namespace Server
                 Object receiveLock = new Object();
                 lock (receiveLock)
                 {
-                    Message message = user.Recieve();
-                    logger.Log(message.Body);
-                    messages.Enqueue(message);
+                    if (user.CheckIfConnected())
+                    {
+                        Message message = user.Recieve();
+                        logger.Log(message.Body);
+                        messages.Enqueue(message);
+                    }
+                    else
+                    {
+                        
+                        users.Remove(client.UserId);
+                    }
                 }
             });
         }
@@ -138,16 +144,16 @@ namespace Server
                 lock (messageLock)
                 {
                     if (messages.Count > 0)
-                    {
-                        for (int i = 0; i < users.Count; i++)
                         {
-                            for (int j = 0; j < messages.Count; j++)
+                            for (int i = 0; i < users.Count; i++)
                             {
-                                users.ElementAt(i).Value.Send(messages.ElementAt(j));
+                                for (int j = 0; j < messages.Count; j++)
+                                {
+                                    users.ElementAt(i).Value.Send(messages.ElementAt(j));
+                                }
                             }
+                            messages.Clear();
                         }
-                        messages.Clear();
-                    }
                 }
             });
         }

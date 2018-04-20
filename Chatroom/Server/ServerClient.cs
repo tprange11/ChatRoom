@@ -33,7 +33,9 @@ namespace Server
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("An error occurred: '{0}'", e);
+                    stream.Close();
+                    client.Close();
+                    Console.WriteLine("1An error occurred: '{0}'", e);
                 }
             }
         }
@@ -43,7 +45,17 @@ namespace Server
             lock (recieveLock)
             {
                 byte[] recievedMessage = new byte[256];
-                stream.Read(recievedMessage, 0, recievedMessage.Length);
+                try
+                {
+                    stream.Read(recievedMessage, 0, recievedMessage.Length);
+                }
+                catch (Exception e)
+                {
+                    stream.Close();
+                    client.Close();
+                    Console.WriteLine("2An error occurred: '{0}'", e);
+                }
+                
                 string recievedMessageString = username + ": " + Encoding.ASCII.GetString(recievedMessage).Replace("\0", string.Empty);
                 Message message = new Message(this, recievedMessageString);
                 //logger.Log(recievedMessageString);
@@ -65,7 +77,7 @@ namespace Server
         }
         public bool CheckIfConnected()
         {
-            return true;
+            return client.Connected;
         }
 
     }
